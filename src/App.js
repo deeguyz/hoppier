@@ -1,6 +1,8 @@
 import styled from '@emotion/styled';
-import {useState} from 'react';
+import {useMemo, useState} from 'react';
 import { getMerchants, getTransactions, getUsers } from './utils/GraphQLData';
+import Table from './table';
+import './table.css';
 
 const Content = styled.div`
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08);
@@ -13,6 +15,7 @@ function App() {
   const [merchants, setMerchants] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [users, setUsers] = useState([]);
+  const [toggle, setToggle] = useState('USD');
 
   getMerchants().then((value) => {
     setMerchants(value);
@@ -31,29 +34,117 @@ function App() {
   const transac = transactions;
   const user = users;
 
-  for(var i in merch){
+  for(let i in merch){
     console.log(merch[i]);
-    // if(merch[i].currency === 'CAD'){
-    //   console.log(merch[i])
-    // }
   }
 
-  for(var i in transac){
+  for(let i in transac){
     console.log(transac[i]);
   }
 
-  for(var i in user) {
+  for(let i in user) {
     console.log(user[i]);
   }
  
+  var history = [];
+  var summary = [];
+  for(let i in user){
+    let count = 0;
+    for(let j in transac){
+      if(user[i].cardId === transac[j].cardId){
+        count = count + transac[j].amountInUSDCents;
+        
+        let res = merch.find(e => {
+          return e.networkId === transac[j].merchantNetworkId;
+        })
+
+        history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60).toFixed(2) });
+      }
+    }
+    summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0).toFixed(2)});
+  }
+
+  console.log(summary);
+  console.log(history);
+
+  for(let i in summary){
+    console.log(summary[i]);
+  }
+
+  for(let i in history){
+    console.log(history[i]);
+  }
+
+  const columnSummary = useMemo (
+    () => [
+      {
+        Header: "Summary",
+        columns: [
+          {
+            Header: "Last Name",
+            accessor: "lastName"
+          },
+          {
+            Header: "First Name",
+            accessor: "firstName"
+          },
+          {
+            Header: "Sum Total",
+            accessor: "sum"
+          }
+        ]
+      }
+    ],
+    []
+  )
+
+  const columnList = useMemo (
+    () => [
+      {
+        Header: "Transactions List",
+        columns: [
+          {
+            Header: "Last Name",
+            accessor: "lastName"
+          },
+          {
+            Header: "First Name",
+            accessor: "firstName"
+          },
+          {
+            Header: "Date",
+            accessor: "date"
+          },
+          {
+            Header: "Merchant",
+            accessor: "merchant"
+          },
+          {
+            Header: "Currency",
+            accessor: "currency"
+          },
+          {
+            Header: "Sum Total USD",
+            accessor: "totalUSD"
+          }
+        ]
+      }
+    ],
+    []
+  )
+  
 
   return (
     // <Content>App goes here!</Content>
-    <div>
-      <p>
-        SOMETHING GOES HERE
-      </p>
-    </div>
+    <Content>
+      <div>
+        <p>
+          SOMETHING GOES HERE
+        </p>
+        <Table columns={columnSummary} data={summary} /> 
+        <Table columns={columnList} data={history} /> 
+      </div>
+    </Content>
   );
 }
 
