@@ -29,6 +29,15 @@ function App() {
     setUsers(value);
   });
 
+  function setCurrency() {
+    if(toggle === 'USD'){
+      setToggle('CAD');
+    }
+    else if(toggle === 'CAD'){
+      setToggle('USD');
+    }
+  };
+
   
   const merch = merchants;  
   const transac = transactions;
@@ -57,11 +66,21 @@ function App() {
         let res = merch.find(e => {
           return e.networkId === transac[j].merchantNetworkId;
         })
-
-        history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60).toFixed(2) });
+        if(toggle === 'CAD'){
+          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60*1.26).toFixed(2)});
+        }
+        else if (toggle === 'USD'){
+          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60).toFixed(2)  });
+        }      
       }
     }
-    summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0).toFixed(2)});
+    if(toggle === 'CAD'){
+      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0*1.26).toFixed(2)});
+    }
+    else if (toggle === 'USD'){
+      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0).toFixed(2)});
+    }   
+    
   }
 
   console.log(summary);
@@ -75,7 +94,7 @@ function App() {
     console.log(history[i]);
   }
 
-  const columnSummary = useMemo (
+  var columnSummary = useMemo (
     () => [
       {
         Header: "Summary",
@@ -98,7 +117,7 @@ function App() {
     []
   )
 
-  const columnList = useMemo (
+  var columnList = useMemo (
     () => [
       {
         Header: "Transactions List",
@@ -124,7 +143,7 @@ function App() {
             accessor: "currency"
           },
           {
-            Header: "Sum Total USD",
+            Header: "Sum Total",
             accessor: "totalUSD"
           }
         ]
@@ -138,9 +157,9 @@ function App() {
     // <Content>App goes here!</Content>
     <Content>
       <div>
-        <p>
-          SOMETHING GOES HERE
-        </p>
+        <button onClick={setCurrency}>
+          {toggle}
+        </button>
         <Table columns={columnSummary} data={summary} /> 
         <Table columns={columnList} data={history} /> 
       </div>
