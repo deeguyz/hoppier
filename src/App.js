@@ -17,18 +17,22 @@ function App() {
   const [users, setUsers] = useState([]);
   const [toggle, setToggle] = useState('USD');
 
+  //Retrieves the Merchants array after resolving the promise
   getMerchants().then((value) => {
     setMerchants(value);
   });
 
+  //Retrieves the Transactions array after resolving the promise
   getTransactions().then((value) => {
     setTransactions(value);
   });
 
+  //Retrieves the Users array after resolving the promise
   getUsers().then((value) => {
     setUsers(value);
   });
 
+  //Function to set the currency toggle on button click
   function setCurrency() {
     if(toggle === 'USD'){
       setToggle('CAD');
@@ -43,17 +47,18 @@ function App() {
   const transac = transactions;
   const user = users;
 
-  for(let i in merch){
-    console.log(merch[i]);
-  }
+  // //Debug statements to print values of arrays
+  // for(let i in merch){
+  //   console.log(merch[i]);
+  // }
 
-  for(let i in transac){
-    console.log(transac[i]);
-  }
+  // for(let i in transac){
+  //   console.log(transac[i]);
+  // }
 
-  for(let i in user) {
-    console.log(user[i]);
-  }
+  // for(let i in user) {
+  //   console.log(user[i]);
+  // }
  
   var history = [];
   var summary = [];
@@ -67,34 +72,36 @@ function App() {
           return e.networkId === transac[j].merchantNetworkId;
         })
         if(toggle === 'CAD'){
-          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60*1.26).toFixed(2)});
+          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": '$'+(transac[j].amountInUSDCents/60*1.26).toFixed(2)+ ' ' + toggle  });
         }
         else if (toggle === 'USD'){
-          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": (transac[j].amountInUSDCents/60).toFixed(2)  });
+          history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": '$'+(transac[j].amountInUSDCents/60).toFixed(2)+ ' ' +toggle});
         }      
       }
     }
     if(toggle === 'CAD'){
-      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0*1.26).toFixed(2)});
+      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": '$'+(count/60.0*1.26).toFixed(2)+ ' ' +toggle});
     }
     else if (toggle === 'USD'){
-      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": (count/60.0).toFixed(2)});
+      summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": '$'+(count/60.0).toFixed(2)+ ' ' +toggle});
     }   
     
   }
 
-  console.log(summary);
-  console.log(history);
+  // //Debug statements to get values of arrays
+  // console.log(summary);
+  // console.log(history);
 
-  for(let i in summary){
-    console.log(summary[i]);
-  }
+  // for(let i in summary){
+  //   console.log(summary[i]);
+  // }
 
-  for(let i in history){
-    console.log(history[i]);
-  }
+  // for(let i in history){
+  //   console.log(history[i]);
+  // }
 
-  var columnSummary = useMemo (
+  //setting summary columns for react-table
+  const columnSummary = useMemo (
     () => [
       {
         Header: "Summary",
@@ -117,7 +124,8 @@ function App() {
     []
   )
 
-  var columnList = useMemo (
+  //setting transaction list columns for react-table
+  const columnList = useMemo (
     () => [
       {
         Header: "Transactions List",
@@ -139,7 +147,7 @@ function App() {
             accessor: "merchant"
           },
           {
-            Header: "Currency",
+            Header: "Merchant Currency",
             accessor: "currency"
           },
           {
@@ -154,12 +162,12 @@ function App() {
   
 
   return (
-    // <Content>App goes here!</Content>
     <Content>
       <div>
         <button onClick={setCurrency}>
           {toggle}
         </button>
+        {/* Calls Table from table.js */}
         <Table columns={columnSummary} data={summary} /> 
         <Table columns={columnList} data={history} /> 
       </div>
