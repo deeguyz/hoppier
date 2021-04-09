@@ -65,12 +65,18 @@ function App() {
   for(let i in user){
     let count = 0;
     for(let j in transac){
+      //If user.cardId matches transactions.cardId then the user made a purchase
       if(user[i].cardId === transac[j].cardId){
+        //Counter for sum total spent of past transactions that users have made
         count = count + transac[j].amountInUSDCents;
         
+        //this let's us access the merchant data without adding another for loop when the transaction.merchantNetworkId matches merchant.networkId
         let res = merch.find(e => {
           return e.networkId === transac[j].merchantNetworkId;
         })
+
+        //This builds the transactions list history array and will update the sum based off the toggle
+        //Transactions list is a history of transactions made by all users
         if(toggle === 'CAD'){
           history.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "date": transac[j].date.toString(), "merchant": res.name, "currency": res.currency, "totalUSD": '$'+(transac[j].amountInUSDCents/60*1.26).toFixed(2)+ ' ' + toggle  });
         }
@@ -79,6 +85,9 @@ function App() {
         }      
       }
     }
+
+    //This builds the summary array and will upate the sum based off the toggle
+    //Summary is used for the total spent of user transactions
     if(toggle === 'CAD'){
       summary.push({"UID": user[i].id,"lastName": user[i].lastName, "firstName": user[i].firstName, "sum": '$'+(count/60.0*1.26).toFixed(2)+ ' ' +toggle});
     }
