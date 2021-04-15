@@ -1,8 +1,8 @@
-# React promise exercise
+# React Promise Exercise
 
 This project is an exercise in utilizing asynchronous mock data and parsing them to tables
 
-### Summary table
+### Summary Table
 
 The first table is a summary table that shows the sum total of all past transactions a user has made
 
