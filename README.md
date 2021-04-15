@@ -16,6 +16,4 @@ The button is a currency toggle that switches the currency dollar amount from US
 
 ### DEMO
 
-Demo of the application
-
 ![alt-text](https://github.com/deeguyz/hoppier/blob/master/ezgif-3-928db9944694.gif)
