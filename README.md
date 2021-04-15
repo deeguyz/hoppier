@@ -1,6 +1,6 @@
 # React promise exercise
 
-This project is an exercise in utilizing asynchronous faker data and displaying tables with proper output
+This project is an exercise in utilizing asynchronous mock data and parsing them to tables
 
 ### Summary table
 
